@@ -28,7 +28,7 @@ An interactive web app implementing **Victor Vroom's normative decision model** 
   6. Group Expertise
   7. Team Competence
 - Five possible recommendations: **Decide · Consult (Individually) · Consult (Group) · Facilitate · Delegate**
-- `vroom_yetton_decision_model1b.jpg` (classic 1973 Vroom-Yetton tree) kept as background reference in an "About the model" section.
+- The classic 1973 Vroom-Yetton tree is rebuilt as data + an interactive SVG (`public/js/tree1973.js`) in the "About the model" section — hover/tap a question or outcome for an explanation, click an outcome to trace its path.
 
 ## 2. User flows
 
@@ -51,7 +51,6 @@ Keep it dependency-free — no build step, no npm packages (Keel is consumed by 
 ```
 DecisionModel/
 ├── PLAN.md
-├── vroom_yetton_decision_model1b.jpg
 ├── wrangler.jsonc              # Cloudflare Worker config (static assets)
 └── public/
     ├── index.html              # single-page app shell
@@ -62,6 +61,7 @@ DecisionModel/
     └── js/
         ├── model.js            # both decision tables + factor/style definitions (data only)
         ├── analyzer.js         # scenario → factor inference heuristics
+        ├── tree1973.js          # 1973 Vroom-Yetton tree data + interactive SVG renderer
         └── app.js              # SPA state machine, routing, rendering, history/share
 ```
 

@@ -1,5 +1,7 @@
 import { FACTORS, FACTOR_BY_ID, STYLES, MODELS, resolve, factorRelevance } from './model.js';
 import { analyzeScenario, CONFIDENCE_LABEL } from './analyzer.js';
+import { mountTree1973 } from './tree1973.js';
+import { mountTree2020 } from './tree2020.js';
 
 /* ------------------------------------------------------------------ */
 /* state                                                               */
@@ -68,6 +70,49 @@ function decodeShare(qs) {
 
 const ICON_COMPASS = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`;
 
+/* ------------------------------------------------------------------ */
+/* theme (light / dark / system)                                      */
+/* ------------------------------------------------------------------ */
+
+const THEME_ICONS = {
+  light: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
+  dark: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>`,
+  system: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
+};
+
+function currentTheme() {
+  return localStorage.getItem('theme') || 'system';
+}
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+  if (theme === 'system') root.removeAttribute('data-mode');
+  else root.setAttribute('data-mode', theme);
+}
+
+function themeToggleHTML() {
+  const current = currentTheme();
+  return `<div class="theme-toggle" role="group" aria-label="Color theme">
+    ${['light', 'dark', 'system'].map((id) => `
+      <button type="button" data-theme-option="${id}" class="${id === current ? 'active' : ''}" title="${id[0].toUpperCase()}${id.slice(1)}" aria-label="${id[0].toUpperCase()}${id.slice(1)}" aria-pressed="${id === current}">${THEME_ICONS[id]}</button>
+    `).join('')}
+  </div>`;
+}
+
+applyTheme(currentTheme());
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-theme-option]');
+  if (!btn) return;
+  const theme = btn.dataset.themeOption;
+  localStorage.setItem('theme', theme);
+  applyTheme(theme);
+  btn.closest('.theme-toggle')?.querySelectorAll('[data-theme-option]').forEach((b) => {
+    const active = b === btn;
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-pressed', String(active));
+  });
+});
+
 /*
  * Ask the Worker's AI endpoint to read the scenario; fall back to the
  * local keyword analyzer if the call fails so the flow always works.
@@ -118,6 +163,7 @@ function shell(active, inner) {
       <a href="#/" class="${active === 'home' ? 'active' : ''}">New decision</a>
       <a href="#/styles" class="${active === 'styles' ? 'active' : ''}">The five styles</a>
       <a href="#/about" class="${active === 'about' ? 'active' : ''}">About the model</a>
+      ${themeToggleHTML()}
     </nav>
   </header>
   ${inner}
@@ -614,13 +660,37 @@ function renderAbout() {
       </div>`).join('')}
     </div>
     <p>Both matrices read the same seven situational factors — decision significance, importance of commitment, leader expertise, likelihood of commitment, goal alignment, group expertise, and team competence — but weigh them differently. The Time-Driven model treats meetings as a cost; the Development-Driven model treats them as an investment.</p>
-    <div class="of-card style-card">
-      <h3>The original 1973 decision tree</h3>
-      <p class="muted" style="margin: var(--of-space-2) 0 var(--of-space-4); font-size: var(--of-text-sm);">The earlier Vroom–Yetton model asked seven yes/no questions and mapped to styles labeled AI, AII, CI, CII, and GII — the ancestors of today's Decide, Consult, Facilitate, and Delegate.</p>
-      <img src="/vroom_yetton_decision_model1b.jpg" alt="Vroom-Yetton 1973 decision tree: questions Q1–Q7 branching to decision styles AI, AII, CI, CII, GII" loading="lazy" />
+    <div>
+      <h3>From 1973 to 2020: how the model changed</h3>
+      <p class="muted" style="margin: var(--of-space-2) 0 var(--of-space-3); font-size: var(--of-text-sm);">The earlier Vroom–Yetton model (1973) asked seven yes/no questions and funneled to one of five outcomes — AI, AII, CI, CII, and GII.</p>
+      <p>The 2020 revision keeps the same seven-factor logic but changes two things. First, the outcomes were renamed for clarity: AI/AII became <strong>Decide</strong>, CI became <strong>Consult Individually</strong>, CII became <strong>Consult Group</strong>, and GII split into two more precise styles — <strong>Facilitate</strong> (you chair the group and set the constraints, but stay a peer in the discussion) and <strong>Delegate</strong> (you hand the whole problem to the group and step back). Second, and more importantly, the single 1973 tree was replaced by <strong>two</strong> matrices for the same factors: a Time-Driven model that picks the most autocratic process that's still safe, and a Development-Driven model that picks the most participative process that's still safe. The same answers to the same seven questions can point to different processes depending on which one you value more — the 1973 tree never asked you to choose.</p>
+      <p class="muted" style="font-size: var(--of-text-sm)">Switch between the three trees below to see it for yourself.</p>
+    </div>
+    <div class="vy-section">
+      <div class="vy-tabs" role="tablist" aria-label="Choose which decision tree to view">
+        <button type="button" class="vy-tabs__btn active" data-vy-tab="1973" role="tab" aria-selected="true">1973 Original</button>
+        <button type="button" class="vy-tabs__btn" data-vy-tab="time" role="tab" aria-selected="false">Time-Driven (2020)</button>
+        <button type="button" class="vy-tabs__btn" data-vy-tab="dev" role="tab" aria-selected="false">Development-Driven (2020)</button>
+      </div>
+      <div class="vy-tree" id="vy-tree"></div>
     </div>
     <p class="subtle">Decision matrices © Victor H. Vroom, 2020. This tool is an educational aid, not a substitute for judgment.</p>
   </div>`);
+
+  const vyTreeEl = document.getElementById('vy-tree');
+  const vyTabs = document.querySelectorAll('.vy-tabs__btn');
+  function mountVyTab(tab) {
+    if (tab === '1973') mountTree1973(vyTreeEl);
+    else mountTree2020(vyTreeEl, tab);
+  }
+  mountVyTab('1973');
+  vyTabs.forEach((btn) => btn.addEventListener('click', () => {
+    vyTabs.forEach((b) => {
+      b.classList.toggle('active', b === btn);
+      b.setAttribute('aria-selected', String(b === btn));
+    });
+    mountVyTab(btn.dataset.vyTab);
+  }));
 }
 
 /* ------------------------------------------------------------------ */

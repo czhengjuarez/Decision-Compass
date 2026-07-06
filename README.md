@@ -13,11 +13,15 @@ Two ways to get a recommendation:
 
 Both paths land on a result screen showing the recommended process (Decide / Consult Individually / Consult Group / Facilitate / Delegate), the judgment trail, what the *other* model would have recommended, and a shareable link. Recent runs are saved to `localStorage` as a decision history.
 
+The About page explains how the 2020 model relates to Victor Vroom's original 1973 tree, with an interactive SVG diagram (tabbed: 1973 Original / Time-Driven / Development-Driven) — hover a question for its wording, hover an outcome for what it means, click an outcome to trace the path that leads there. A Light/Dark/System toggle in the header controls the color theme.
+
 ## Tech stack
 
 - No build step, no npm dependencies. Plain HTML/CSS/JS served as static assets.
 - [Keel](https://github.com/) design system CSS is **copied**, not installed — see `public/css/keel-tokens.css` and `public/css/keel.css`.
 - Backend is a single Cloudflare Worker (`src/worker.js`) that only handles `POST /api/analyze`, calling Workers AI (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`) with a structured JSON schema. Everything else is served by the Worker's static assets binding.
+
+**Why vanilla instead of Vite + React (used by other apps in this account):** this app is small enough — one state object, hash-based routing, a handful of template-literal render functions — that React would add a build step and dependency surface without buying much. Decided (2026-07) to keep it standalone for now; may migrate to Vite + React later purely for consistency with the rest of the app fleet, not because the current architecture is a problem.
 
 ## Project structure
 
@@ -30,7 +34,6 @@ DecisionModel/
 │   └── worker.js                # POST /api/analyze — Workers AI scenario analysis
 └── public/
     ├── index.html                # single-page app shell
-    ├── vroom_yetton_decision_model1b.jpg
     ├── css/
     │   ├── keel-tokens.css       # copied from Keel repo
     │   ├── keel.css              # copied from Keel repo
@@ -38,6 +41,9 @@ DecisionModel/
     └── js/
         ├── model.js               # both decision tables + factor/style definitions (data only)
         ├── analyzer.js            # client-side scenario → factor inference heuristics (fallback)
+        ├── treeViz.js              # generic interactive-SVG-tree layout/render/interaction engine
+        ├── tree1973.js             # 1973 Vroom-Yetton tree data (uses treeViz.js)
+        ├── tree2020.js             # 2020 Time-/Development-Driven trees, generated from model.js (uses treeViz.js)
         └── app.js                 # SPA state machine, routing, rendering, history/share
 ```
 

@@ -32,6 +32,15 @@ Instructions for AI coding agents working in this repo. See `README.md` for the 
 - Single-file SPA: hash-based routing, one `state` object, template-literal rendering into `#app`. No virtual DOM, no component framework — keep new UI in this style rather than introducing one.
 - Styling uses Keel's `--of-*` design tokens and `of-*` utility classes (buttons, cards, badges, fields) defined in `keel-tokens.css`/`keel.css`. Reach for those before writing new raw CSS in `app.css`.
 - The brand mark is an inline SVG compass icon (`ICON_COMPASS` in `app.js`, reused as the page favicon in `index.html`) — if you touch the brand mark, keep both in sync.
+- Theme (Light/Dark/System) is `data-mode` on `<html>` + `localStorage['theme']`, applied in `applyTheme()`. Because every Keel token already uses `light-dark(...)`, the toggle only needs to flip the computed `color-scheme` (see `:root[data-mode='light'|'dark']` in `app.css`) — never duplicate hex values per mode.
+
+## Interactive decision trees (`treeViz.js`, `tree1973.js`, `tree2020.js`)
+
+- `treeViz.js` is a generic engine: give it a `{q, no, yes}`/`{leaf}` tree plus `questions`/`styles`/`edgeLabels`/`legend`, and it lays out (position derived from tree shape, not hand-placed), renders an SVG, and wires up hover/focus/click-to-pin-a-path interactivity. `tree1973.js` and `tree2020.js` are thin data modules on top of it — put new trees there, not new copies of the engine.
+- `tree2020.js`'s trees are **generated from `model.js`'s `TIME_DRIVEN`/`DEV_DRIVEN`** via a small converter, not hand-transcribed — this guarantees the About-page diagrams can never drift from the actual decision logic. If `model.js`'s trees change, these update automatically.
+- `tree1973.js`'s tree **was** hand-transcribed (from a historical chart, no source data file existed) and cross-checked to produce exactly 14 terminal outcomes matching the classic Vroom-Yetton group-problem tree. Don't "clean up" its branch order — the `first: 'yes'` overrides on some nodes intentionally reproduce the original chart's visual order, not an arbitrary choice.
+- **The `<svg>` must have explicit `width`/`height` attributes matching the `viewBox`**, not just `viewBox` alone. Relying on CSS `width:100%; height:auto` with no intrinsic size attributes causes the browser to recompute the aspect ratio unstably during reflow — this shipped once and looked like the diagram "shrinking or jumping" on hover. Verified fixed with a scripted Playwright hover/click sweep (0px delta across every node/leaf); if you touch sizing here again, re-verify the same way rather than eyeballing it.
+- The diagram intentionally lives inside `.app`'s normal 880px column (no full-bleed breakout) so it left-aligns with the surrounding copy — it's fully fluid (scales via `viewBox`, no min-width) so it doesn't need extra width.
 
 ## Code style
 

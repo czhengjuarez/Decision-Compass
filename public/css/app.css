@@ -1,8 +1,15 @@
 /* Decision Compass — app layout on top of Keel tokens/components */
 
 :root { color-scheme: light dark; }
+:root[data-mode='light'] { color-scheme: light; }
+:root[data-mode='dark'] { color-scheme: dark; }
 
 * { box-sizing: border-box; }
+
+/* Reserves the scrollbar gutter so it never toggles on/off as page
+ * height changes, which otherwise causes a few px of horizontal jitter
+ * across the whole page. */
+html { scrollbar-gutter: stable; }
 
 html, body {
   margin: 0;
@@ -89,6 +96,37 @@ a { color: var(--of-fg-brand); }
 }
 .topbar__nav a:hover { background: var(--of-bg-recessed); color: var(--of-fg-default); }
 .topbar__nav a.active { color: var(--of-fg-brand); background: var(--of-bg-brand-tint); }
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  margin-left: var(--of-space-2);
+  border-radius: var(--of-radius-md);
+  background: var(--of-bg-recessed);
+  border: 1px solid var(--of-border-line);
+}
+.theme-toggle button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--of-radius-sm);
+  background: transparent;
+  color: var(--of-fg-subtle);
+  cursor: pointer;
+  transition: background var(--of-dur-fast), color var(--of-dur-fast);
+}
+.theme-toggle button:hover { color: var(--of-fg-default); }
+.theme-toggle button.active {
+  background: var(--of-bg-elevated);
+  color: var(--of-fg-brand);
+  box-shadow: var(--of-shadow-xs);
+}
+.theme-toggle button:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--of-ring); }
 
 /* ---------- shared ---------- */
 .stack { display: flex; flex-direction: column; gap: var(--of-space-5); }
@@ -311,13 +349,92 @@ a { color: var(--of-fg-brand); }
 .spectrum span.on { background: var(--of-bg-brand); color: var(--of-fg-on-brand); }
 
 /* ---------- about ---------- */
-.about img {
-  max-width: 100%;
-  border-radius: var(--of-radius-md);
-  border: 1px solid var(--of-border-line);
-  background: #fff;
-}
 .about p { max-width: 68ch; }
+
+/* ---------- decision trees (1973 + 2020) ---------- */
+/* Stays inside .app's normal 880px column (same as the text above it)
+ * instead of breaking out wider — the diagram is fully fluid (scales
+ * via viewBox, no min-width), so it just scales down a bit to fit,
+ * and lines up exactly with the copy instead of floating separately. */
+.vy-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--of-space-4);
+}
+.vy-tabs { display: flex; flex-wrap: wrap; gap: var(--of-space-2); }
+.vy-tabs__btn {
+  font-size: var(--of-text-sm);
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--of-radius-pill);
+  border: 1px solid var(--of-border-line);
+  background: var(--of-bg-elevated);
+  color: var(--of-fg-muted);
+  cursor: pointer;
+  transition: background var(--of-dur-fast), color var(--of-dur-fast), border-color var(--of-dur-fast);
+}
+.vy-tabs__btn:hover { color: var(--of-fg-default); }
+.vy-tabs__btn.active { background: var(--of-bg-brand-tint); color: var(--of-fg-brand); border-color: var(--of-border-brand); }
+.vy-tabs__btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--of-ring); }
+.vy-tree {
+  display: flex;
+  flex-direction: column;
+  gap: var(--of-space-4);
+}
+.vy-tree__scroll { overflow-x: auto; }
+.vy-svg { display: block; width: 100%; height: auto; }
+.vy-col-label { font: 600 12px var(--of-font-sans); fill: var(--of-fg-subtle); }
+
+/* Geometry (stroke-width, radius, box size) never changes on hover/
+ * active/focus below — only color and a non-geometric drop-shadow
+ * glow — so nothing in the diagram grows or shifts as you interact. */
+.vy-edge { stroke: var(--of-border-line); stroke-width: 1.5; }
+.vy-edge-label { font: 600 10px var(--of-font-sans); fill: var(--of-fg-subtle); }
+.vy-edge-g.is-active .vy-edge { stroke: var(--of-fg-brand); }
+.vy-edge-g.is-active .vy-edge-label { fill: var(--of-fg-brand); }
+
+.vy-node__hit { fill: transparent; }
+.vy-node__dot { fill: var(--of-bg-elevated); stroke: var(--of-fg-subtle); stroke-width: 1.5; }
+.vy-node__label { font: 700 11px var(--of-font-sans); fill: var(--of-fg-muted); }
+.vy-node { cursor: pointer; }
+.vy-node:focus-visible { outline: none; }
+.vy-node:focus-visible .vy-node__dot { stroke: var(--of-ring); }
+.vy-node.is-active .vy-node__dot { fill: var(--of-fg-brand); stroke: var(--of-fg-brand); }
+.vy-node.is-active .vy-node__label { fill: var(--of-fg-brand); }
+
+.vy-leaf { cursor: pointer; }
+.vy-leaf:focus-visible { outline: none; }
+.vy-leaf__box { stroke-width: 1.5; }
+.vy-leaf__label { font: 700 11px var(--of-font-sans); }
+.vy-leaf--blue .vy-leaf__box { fill: var(--of-bg-info-tint); stroke: var(--of-info-500); }
+.vy-leaf--blue .vy-leaf__label { fill: var(--of-fg-info); }
+.vy-leaf--amber .vy-leaf__box { fill: var(--of-bg-warning-tint); stroke: var(--of-warning-500); }
+.vy-leaf--amber .vy-leaf__label { fill: var(--of-fg-warning); }
+.vy-leaf--green .vy-leaf__box { fill: var(--of-bg-success-tint); stroke: var(--of-success-500); }
+.vy-leaf--green .vy-leaf__label { fill: var(--of-fg-success); }
+.vy-leaf--purple .vy-leaf__box { fill: var(--of-bg-brand-tint); stroke: var(--of-magenta-400); }
+.vy-leaf--purple .vy-leaf__label { fill: var(--of-fg-brand); }
+.vy-leaf.is-active .vy-leaf__box { stroke: var(--of-fg-brand); }
+
+/* Fixed (not min-) height: content varies (default legend vs. a short
+ * question vs. an outcome + "Clear selection" button), and a height
+ * that could still grow would push the copyright line/footer below it
+ * up and down as you hover. overflow-y is just a safety net. */
+.vy-panel { padding: var(--of-space-4) var(--of-space-5); height: 172px; overflow-y: auto; }
+.vy-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--of-space-2) var(--of-space-5);
+  margin-top: var(--of-space-3);
+  font-size: var(--of-text-xs);
+  color: var(--of-fg-muted);
+}
+.vy-legend__item { display: inline-flex; align-items: center; gap: 6px; }
+.vy-legend__swatch { width: 10px; height: 10px; border-radius: var(--of-radius-xs); flex-shrink: 0; }
+.vy-legend__swatch--blue { background: var(--of-info-500); }
+.vy-legend__swatch--amber { background: var(--of-warning-500); }
+.vy-legend__swatch--green { background: var(--of-success-500); }
+.vy-legend__swatch--purple { background: var(--of-magenta-400); }
 
 /* ---------- footer ---------- */
 .foot {
