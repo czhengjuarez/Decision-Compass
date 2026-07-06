@@ -1,0 +1,17 @@
+{
+  "name": "decision-compass",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-06-01",
+  "account_id": "d6ff2f0914adb1d9faae77870fadb7cc",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "single-page-application"
+  },
+  "ai": {
+    "binding": "AI"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
