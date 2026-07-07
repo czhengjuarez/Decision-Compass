@@ -280,7 +280,13 @@ a { color: var(--of-fg-brand); }
 .infer--skipped .infer__name { text-decoration: line-through; text-decoration-color: var(--of-border-strong); }
 .infer__skip-badge { margin-left: 8px; text-decoration: none; display: inline-flex; }
 .seg--disabled button { cursor: not-allowed; }
-.insight { border-left: 3px solid var(--of-border-brand); }
+.insight {
+  border: none;
+  border-left: 3px solid var(--of-border-brand);
+  border-radius: 0 var(--of-radius-sm) var(--of-radius-sm) 0;
+  background: var(--of-bg-recessed);
+  box-shadow: none;
+}
 
 /* ---------- result ---------- */
 .result-hero { padding: var(--of-space-8) var(--of-space-6); }
