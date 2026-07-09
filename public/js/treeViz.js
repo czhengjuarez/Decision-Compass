@@ -98,7 +98,7 @@ function buildSvg(layout, { colOrder, questions, styles, edgeLabels }) {
     const s = styles[l.style];
     const w = 52, h = 26;
     return `<g class="vy-leaf vy-leaf--${s.tone}" data-leaf="${l.id}" tabindex="0" role="button" aria-label="${esc(s.name)}: ${esc(s.desc)}">
-      <rect class="vy-leaf__box" x="${l.x - w / 2}" y="${l.y - h / 2}" width="${w}" height="${h}" rx="6" />
+      <rect class="vy-leaf__box" x="${l.x - w / 2}" y="${l.y - h / 2}" width="${w}" height="${h}" rx="0" />
       <text class="vy-leaf__label" x="${l.x}" y="${l.y + 4}" text-anchor="middle">${esc(s.badge)}</text>
     </g>`;
   }).join('');

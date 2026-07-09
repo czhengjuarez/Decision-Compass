@@ -161,7 +161,7 @@ a { color: var(--of-fg-brand); }
 /* ---------- model picker ---------- */
 .model-pick {
   border: 1px solid var(--of-border-line);
-  border-radius: var(--of-radius-lg);
+  border-radius: 0;
   background: var(--of-bg-elevated);
   padding: var(--of-space-4);
   cursor: pointer;
@@ -217,7 +217,7 @@ a { color: var(--of-fg-brand); }
 @media (max-width: 560px) { .hl-buttons { grid-template-columns: 1fr; } }
 .hl-btn {
   border: 1px solid var(--of-border-line);
-  border-radius: var(--of-radius-md);
+  border-radius: 0;
   background: var(--of-bg-elevated);
   padding: var(--of-space-4);
   text-align: left;
@@ -243,7 +243,7 @@ a { color: var(--of-fg-brand); }
   border-left: 3px solid var(--of-border-brand);
   padding: var(--of-space-2) var(--of-space-4);
   background: var(--of-bg-recessed);
-  border-radius: 0 var(--of-radius-sm) var(--of-radius-sm) 0;
+  border-radius: 0;
   font-size: var(--of-text-sm);
   color: var(--of-fg-muted);
   white-space: pre-wrap;
@@ -283,7 +283,7 @@ a { color: var(--of-fg-brand); }
 .insight {
   border: none;
   border-left: 3px solid var(--of-border-brand);
-  border-radius: 0 var(--of-radius-sm) var(--of-radius-sm) 0;
+  border-radius: 0;
   background: var(--of-bg-recessed);
   box-shadow: none;
 }
@@ -298,7 +298,7 @@ a { color: var(--of-fg-brand); }
 
 .compare {
   border: 1px dashed var(--of-border-strong);
-  border-radius: var(--of-radius-lg);
+  border-radius: 0;
   padding: var(--of-space-4) var(--of-space-5);
   background: var(--of-bg-recessed);
 }
@@ -318,7 +318,7 @@ a { color: var(--of-fg-brand); }
   color: inherit;
   background: var(--of-bg-elevated);
   border: 1px solid var(--of-border-line);
-  border-radius: var(--of-radius-md);
+  border-radius: 0;
   padding: var(--of-space-3) var(--of-space-4);
   cursor: pointer;
 }

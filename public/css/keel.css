@@ -57,7 +57,7 @@
 .of-card {
   background: var(--of-bg-elevated);
   border: 1px solid var(--of-border-line);
-  border-radius: var(--of-radius-lg);
+  border-radius: 0;
   box-shadow: var(--of-shadow-sm);
   padding: 16px;
 }
@@ -103,7 +103,7 @@
   font-family: inherit;
   font-size: 14px;
   padding: 9px 12px;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid var(--of-border-line);
   background: var(--of-bg-elevated);
   color: var(--of-fg-default);
